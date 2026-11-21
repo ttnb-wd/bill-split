@@ -145,7 +145,7 @@ body.profile-screen main{padding-bottom:40px}
 
 const COL=['#FF3D81','#7B4DFF','#00B8FF','#14D99B','#FFC21A','#FF7A29'];
 const EMO=['🐯','🦊','🐼','🐸','🦄','🐙','🐵','🐰','🐻','🐶'];
-const S={screen:'calculator',returnScreen:'calculator',tab:0,anim:true,mem:null,code:null,groupName:'',people:[],items:[],sig:'',draft:null,pending:'',createForm:null,calc:{amount:'',people:2},form:{title:'',amt:'',payer:null,split:[]}};
+const S={screen:'calculator',returnScreen:'calculator',tab:0,anim:true,mem:null,code:null,groupName:'',ownerId:null,people:[],items:[],sig:'',draft:null,pending:'',createForm:null,calc:{amount:'',people:2},form:{title:'',amt:'',payer:null,split:[]}};
 const $=s=>document.querySelector(s), esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>Number(n.toFixed(2)).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const L=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
@@ -175,21 +175,32 @@ async function join(code,openCalculator=false){
  if(!mm[code]){try{mm[code]=(await api('/g/'+code+'/members','POST',pr)).id;L('mem',mm)}catch(e){toast(e.message);S.screen='start';render();return false}}
  const savedName=knownGroups().find(g=>g.code===code)?.name;
  const displayName=group.name||savedName||`Group ${code}`;
- S.code=code;S.groupName=displayName;rememberGroup(code,displayName);S.mem=mm[code];L('group',code);
+ S.code=code;S.groupName=displayName;S.ownerId=group.ownerId;rememberGroup(code,displayName);S.mem=mm[code];L('group',code);
  try{history.replaceState(null,'','?g='+code)}catch(e){}
  S.tab=openCalculator?0:1;S.anim=true;await refresh(true);S.screen='app';render();return true}
 async function create(name,friends=[]){
  try{
   const d=await api('/groups','POST',{name});
   const groupName=d.name||name;
+  const ownerId=d.ownerId;
   rememberGroup(d.code,groupName);
   S.groupName=groupName;
-  if(!await join(d.code))return;
+  S.ownerId=ownerId;
+  const mm=L('mem')||{};
+  mm[d.code]=ownerId;
+  L('mem',mm);
+  S.mem=ownerId;
+  const pr=L('profile')||defaultProfile();
+  await api('/g/'+d.code+'/members','POST',{...pr,id:ownerId});
+  S.code=d.code;
+  L('group',d.code);
+  try{history.replaceState(null,'','?g='+d.code)}catch(e){}
   for(const friend of friends){
    try{await api('/g/'+d.code+'/members','POST',friend)}
    catch(e){toast(`${friend.name} could not be added: ${e.message}`);break}
   }
-  S.createForm=null;await refresh(true)
+  S.tab=1;S.anim=true;await refresh(true);S.screen='app';
+  S.createForm=null;render()
  }catch(e){toast(e.message)}}
 function openCreateForm(){S.createForm={name:'',friends:[],selected:[],loaded:false,loading:false,picker:false};S.screen='create';S.anim=true;render()}
 function friendKey(p){return JSON.stringify([p.name,p.emoji,p.color,p.avatar||''])}
@@ -223,6 +234,7 @@ async function refresh(force){
  try{const d=await api('/g/'+S.code);
   if(!d.members.some(m=>m.id===S.mem)){const mm=L('mem')||{};mm[S.code]=(await api('/g/'+S.code+'/members','POST',L('profile')||defaultProfile())).id;L('mem',mm);S.mem=mm[S.code];return refresh(true)}
   if(d.name&&d.name!==S.groupName){S.groupName=d.name;rememberGroup(S.code,S.groupName)}
+  if(d.ownerId)S.ownerId=d.ownerId;
   const sig=JSON.stringify(d);S.people=d.members;S.items=d.items;
   if(force||sig!==S.sig){S.sig=sig;const a=document.activeElement;
    if(S.screen==='app'){if(!force&&a&&a.tagName==='INPUT')return;render()}}
@@ -343,7 +355,15 @@ function vPeople(v){
  const copyCode=()=>{(navigator.clipboard?navigator.clipboard.writeText(S.code):Promise.reject()).then(()=>toast('Invite code copied ✓'),()=>toast(S.code))};
  v.innerHTML=`<div class="card${A()}"><div class="lbl" style="margin:0;justify-content:center">Invite friends with this code</div><div class="code" id="code-display" style="cursor:pointer" title="Click to copy code">${S.code}</div>
  <div class="row"><button class="btn" id="sh" style="flex:1">Share invite</button><button class="btn mint" id="cp" style="flex:1">Copy link</button></div></div>
- <h2>In this group</h2>`+S.people.map(p=>`<div class="person${A()}" style="--c:${p.color}">${av(p)}<b>${esc(p.name)}${p.id===S.mem?' <small style="color:var(--mut)">(you)</small>':''}</b>${p.id===S.mem?'':`<button class="x" data-d="${p.id}" aria-label="Remove ${esc(p.name)}">×</button>`}</div>`).join('')+
+ <h2>In this group</h2>`+S.people.map(p=>{
+  const isYou=p.id===S.mem;
+  const isOwner=p.id===S.ownerId;
+  let badge='';
+  if(isYou&&isOwner)badge=' <small style="color:var(--vio)">👑 Owner (you)</small>';
+  else if(isOwner)badge=' <small style="color:var(--vio)">👑 Owner</small>';
+  else if(isYou)badge=' <small style="color:var(--mut)">(you)</small>';
+  const canRemove=!isYou&&!isOwner;
+  return `<div class="person${A()}" style="--c:${p.color}">${av(p)}<b>${esc(p.name)}${badge}</b>${canRemove?`<button class="x" data-d="${p.id}" aria-label="Remove ${esc(p.name)}">×</button>`:''}</div>`}).join('')+
  `<div class="card"><div class="lbl" style="margin-top:0">Friend not on their phone? Add them</div><div class="row"><input id="pn" placeholder="Friend’s name" maxlength="16" autocomplete="off"><button class="btn" id="pa">Add</button></div></div>
  <button class="linkbtn" id="sw">Switch group</button>`;
  $('#code-display').onclick=copyCode;
