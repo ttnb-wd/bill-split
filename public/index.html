@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#7B4DFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Bill Split</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&display=swap" rel="stylesheet">
@@ -23,22 +27,23 @@ h1 .sp{width:16px}
 @keyframes drop{from{transform:translateY(-140px) rotate(-30deg);opacity:0}}
 .tag{color:var(--mut);margin:12px 0 22px;font-size:17px;font-weight:600}
 .tabs{position:relative;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-radius:22px;padding:5px;margin-bottom:22px;box-shadow:0 10px 30px -14px rgba(123,77,255,.5)}
-.tabs button{position:relative;z-index:1;border:0;background:none;color:var(--mut);font-weight:700;font-size:14px;font-family:inherit;padding:13px 2px;cursor:pointer;transition:color .25s}
+.tabs button{position:relative;z-index:1;border:0;background:none;color:var(--mut);font-weight:700;font-size:14px;font-family:inherit;padding:13px 2px;cursor:pointer;transition:color .25s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:48px}
 .tabs button.on{color:#fff}
 .ind{position:absolute;top:5px;bottom:5px;left:5px;width:calc((100% - 10px)/4);border-radius:18px;background:linear-gradient(135deg,var(--pink),var(--vio));box-shadow:0 8px 20px -6px var(--pink);transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
 .card{background:var(--card);border-radius:28px;padding:18px;margin-bottom:16px;box-shadow:0 14px 34px -16px rgba(123,77,255,.45)}
 .row{display:flex;gap:10px;align-items:center}
-input{width:100%;border:2.5px solid transparent;background:var(--soft);color:var(--ink);font-weight:700;font-size:17px;font-family:inherit;padding:14px 16px;border-radius:16px;outline:0;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none;position:relative;z-index:2;transition:border-color .2s,background .2s}
+input,button,select,textarea{-webkit-tap-highlight-color:transparent}
+input{width:100%;border:2.5px solid transparent;background:var(--soft);color:var(--ink);font-weight:700;font-size:17px;font-family:inherit;padding:14px 16px;border-radius:16px;outline:0;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none;position:relative;z-index:2;transition:border-color .2s,background .2s;touch-action:manipulation}
 input:focus{border-color:var(--vio);background:#fff;box-shadow:0 0 0 5px rgba(123,77,255,.18)}
 input::placeholder{color:var(--mut);font-weight:500}
-.btn{border:0;cursor:pointer;color:#fff;font-weight:800;font-size:17px;font-family:inherit;padding:14px 22px;border-radius:16px;background:linear-gradient(135deg,var(--vio),var(--pink));box-shadow:0 10px 22px -8px var(--vio);white-space:nowrap;transition:transform .2s cubic-bezier(.3,1.8,.5,1)}
+.btn{border:0;cursor:pointer;color:#fff;font-weight:800;font-size:17px;font-family:inherit;padding:14px 22px;border-radius:16px;background:linear-gradient(135deg,var(--vio),var(--pink));box-shadow:0 10px 22px -8px var(--vio);white-space:nowrap;transition:transform .2s cubic-bezier(.3,1.8,.5,1);touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:48px;display:inline-flex;align-items:center;justify-content:center}
 .btn:hover{transform:translateY(-3px) scale(1.04)}.btn:active{transform:scale(.93)}
 .btn.full{width:100%;margin-top:16px;padding:17px;font-size:18px}
 .btn.mint{background:linear-gradient(135deg,var(--mint),var(--sky));color:#063b2c;box-shadow:0 10px 22px -8px var(--mint)}
 button:focus-visible,input:focus-visible{outline:3px solid var(--org);outline-offset:2px}
 .lbl{font-size:14px;color:var(--mut);margin:18px 0 9px;font-weight:700;display:flex;align-items:center;gap:8px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{display:flex;align-items:center;gap:7px;border:2.5px solid var(--c);background:#fff;color:var(--ink);font-weight:700;font-size:15px;font-family:inherit;padding:5px 14px 5px 5px;border-radius:99px;cursor:pointer;transition:transform .25s cubic-bezier(.3,1.8,.5,1),background .2s}
+.chip{display:flex;align-items:center;gap:7px;border:2.5px solid var(--c);background:#fff;color:var(--ink);font-weight:700;font-size:15px;font-family:inherit;padding:5px 14px 5px 5px;border-radius:99px;cursor:pointer;transition:transform .25s cubic-bezier(.3,1.8,.5,1),background .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:44px}
 .chip.on{background:var(--c);color:#fff;transform:scale(1.08)}
 .chip:active{transform:scale(.9)}
 .av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:19px;background:var(--c);flex:none}
@@ -47,7 +52,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--org);outline-of
 .person{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;background:var(--card);border-radius:24px;margin-bottom:10px;border-left:8px solid var(--c);box-shadow:0 10px 26px -16px rgba(123,77,255,.5)}
 .person .av{width:48px;height:48px;font-size:27px}
 .person b{flex:1;font-size:18px}
-.x{border:0;background:var(--soft);color:var(--mut);width:34px;height:34px;border-radius:50%;cursor:pointer;font-weight:700;font-size:18px;font-family:inherit;transition:transform .25s,background .2s,color .2s}
+.x{border:0;background:var(--soft);color:var(--mut);width:34px;height:34px;border-radius:50%;cursor:pointer;font-weight:700;font-size:18px;font-family:inherit;transition:transform .25s,background .2s,color .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
 .x:hover{background:var(--pink);color:#fff;transform:rotate(90deg)}
 .x.txt{width:auto;padding:0 12px;font-size:13px;height:28px}
 .in{animation:pop .55s cubic-bezier(.3,1.6,.5,1) backwards}
@@ -93,25 +98,25 @@ body.profile-screen main{padding-bottom:40px}
 .pill{display:flex;align-items:center;gap:8px;min-width:0;max-width:65%;background:#fff;border-radius:99px;padding:8px 14px;font-weight:700;font-size:14px;color:var(--mut);box-shadow:0 8px 20px -12px rgba(123,77,255,.6)}
 .pill b{color:var(--ink);letter-spacing:2px}
 .pill .gn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.mebtn{display:flex;align-items:center;gap:6px;border:2.5px solid var(--c,var(--vio));background:#fff;color:var(--ink);font-weight:700;font-size:15px;font-family:inherit;padding:6px 14px;border-radius:99px;cursor:pointer;min-height:44px}
-.code{font-weight:800;font-size:clamp(36px,12vw,52px);letter-spacing:6px;text-align:center;margin:6px 0 14px;background:linear-gradient(90deg,var(--pink),var(--vio),var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent}
+.mebtn{display:flex;align-items:center;gap:6px;border:2.5px solid var(--c,var(--vio));background:#fff;color:var(--ink);font-weight:700;font-size:15px;font-family:inherit;padding:6px 14px;border-radius:99px;cursor:pointer;min-height:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.code{font-weight:800;font-size:clamp(36px,12vw,52px);letter-spacing:6px;text-align:center;margin:6px 0 14px;background:linear-gradient(90deg,var(--pink),var(--vio),var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-user-select:all;user-select:all}
 .bigav{width:96px;height:96px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-size:54px;margin:0 auto 16px;transition:background .3s,transform .4s cubic-bezier(.3,1.8,.5,1);box-shadow:0 14px 30px -12px var(--c)}
 .photo-actions{display:flex;justify-content:center;gap:10px;margin:-4px 0 12px}
-.photo-btn{border:0;background:var(--soft);color:var(--ink);font-family:inherit;font-weight:700;font-size:14px;padding:9px 14px;border-radius:99px;cursor:pointer}
+.photo-btn{border:0;background:var(--soft);color:var(--ink);font-family:inherit;font-weight:700;font-size:14px;padding:9px 14px;border-radius:99px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:40px}
 .photo-btn[hidden]{display:none}
 .result{background:var(--soft);border-radius:22px;padding:16px;text-align:center;margin-top:16px}
 .result small{display:block;color:var(--mut);font-weight:700}
 .result strong{display:block;font-size:clamp(34px,10vw,48px);line-height:1.15;color:var(--vio);margin:4px 0}
 .result .total{color:var(--ink);font-size:17px}
 .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.pick,.sw{aspect-ratio:1;border:3px solid transparent;border-radius:18px;background:var(--soft);font-size:28px;cursor:pointer;transition:transform .25s cubic-bezier(.3,1.8,.5,1)}
+.pick,.sw{aspect-ratio:1;border:3px solid transparent;border-radius:18px;background:var(--soft);font-size:28px;cursor:pointer;transition:transform .25s cubic-bezier(.3,1.8,.5,1);touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:44px;display:flex;align-items:center;justify-content:center}
 .sw{background:var(--c)}
 .grid:last-of-type{grid-template-columns:repeat(6,1fr)}
 .pick.on,.sw.on{border-color:var(--ink);transform:scale(1.12)}
 .pick:active,.sw:active{transform:scale(.88)}
-.linkbtn{display:block;margin:10px auto 0;border:0;background:none;color:var(--mut);font-weight:700;font-size:15px;font-family:inherit;padding:12px;cursor:pointer;text-decoration:underline}
+.linkbtn{display:block;margin:10px auto 0;border:0;background:none;color:var(--mut);font-weight:700;font-size:15px;font-family:inherit;padding:12px;cursor:pointer;text-decoration:underline;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:44px}
 .group-list{display:grid;gap:9px;margin-bottom:16px}
-.group-link{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:14px 16px;border:0;border-left:8px solid var(--vio);border-radius:20px;background:var(--card);color:var(--ink);font-family:inherit;font-weight:700;font-size:16px;box-shadow:0 10px 26px -16px rgba(123,77,255,.5);cursor:pointer;text-align:left;transition:transform .2s}
+.group-link{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:14px 16px;border:0;border-left:8px solid var(--vio);border-radius:20px;background:var(--card);color:var(--ink);font-family:inherit;font-weight:700;font-size:16px;box-shadow:0 10px 26px -16px rgba(123,77,255,.5);cursor:pointer;text-align:left;transition:transform .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:56px}
 .group-link:hover{transform:translateY(-2px)}
 .group-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .group-link small{flex:none;color:var(--mut);letter-spacing:1.5px}
@@ -119,7 +124,7 @@ body.profile-screen main{padding-bottom:40px}
 .modal-card{width:min(100%,520px);max-height:calc(100vh - 36px);overflow:auto;background:var(--card);border-radius:28px;padding:20px;box-shadow:0 20px 60px -18px rgba(42,27,107,.55);animation:pop .45s cubic-bezier(.3,1.6,.5,1) backwards}
 .modal-card h2{margin:0 0 12px}
 .friend-options{display:grid;gap:8px;max-height:30vh;overflow:auto;margin-top:12px}
-.friend-option{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:2px solid var(--soft);border-radius:18px;background:var(--card);color:var(--ink);font-family:inherit;font-weight:700;font-size:15px;text-align:left;cursor:pointer}
+.friend-option{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:2px solid var(--soft);border-radius:18px;background:var(--card);color:var(--ink);font-family:inherit;font-weight:700;font-size:15px;text-align:left;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:52px}
 .friend-option.on{border-color:var(--vio);background:var(--soft)}
 .friend-option span:nth-child(2){flex:1}
 .friend-option small{color:var(--mut)}
@@ -150,8 +155,8 @@ const $=s=>document.querySelector(s), esc=t=>String(t).replace(/[&<>"]/g,c=>({'&
 const fmt=n=>Number(n.toFixed(2)).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const L=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
 const defaultProfile=()=>({name:'You',emoji:EMO[0],color:COL[0],avatar:null});
-const knownGroups=()=>{const groups=L('groups');return Array.isArray(groups)?groups.filter(g=>g&&typeof g.code==='string').map(g=>({code:g.code,name:typeof g.name==='string'&&g.name.trim()?g.name.trim():`Group ${g.code}`})):[]};
-function rememberGroup(code,name){const groups=knownGroups().filter(g=>g.code!==code);groups.unshift({code,name:String(name||`Group ${code}`).slice(0,40)});L('groups',groups)}
+const knownGroups=()=>{const groups=L('groups');return Array.isArray(groups)?groups.filter(g=>g&&typeof g.code==='string').map(g=>({code:g.code,name:typeof g.name==='string'&&g.name.trim()?g.name.trim():`Group ${g.code}`,ownerId:g.ownerId||null})):[]};
+function rememberGroup(code,name,ownerId){const groups=knownGroups().filter(g=>g.code!==code);groups.unshift({code,name:String(name||`Group ${code}`).slice(0,40),ownerId:ownerId||null});L('groups',groups)}
 const P=id=>S.people.find(p=>p.id===id)||{name:'?',color:'#999',emoji:'❔',avatar:null};
 const safeAvatar=a=>typeof a==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/.test(a)?a:'';
 const av=p=>`<span class="av" style="--c:${p.color}">${safeAvatar(p.avatar)?`<img src="${esc(safeAvatar(p.avatar))}" alt="">`:esc(p.emoji||'🙂')}</span>`;
@@ -173,9 +178,10 @@ async function join(code,openCalculator=false){
  try{group=await api('/g/'+code)}catch(e){toast(e.status===404?'Invite code not found':e.message);S.screen='start';render();return false}
  const pr=L('profile')||defaultProfile(),mm=L('mem')||{};
  if(!mm[code]){try{mm[code]=(await api('/g/'+code+'/members','POST',pr)).id;L('mem',mm)}catch(e){toast(e.message);S.screen='start';render();return false}}
- const savedName=knownGroups().find(g=>g.code===code)?.name;
- const displayName=group.name||savedName||`Group ${code}`;
- S.code=code;S.groupName=displayName;S.ownerId=group.ownerId;rememberGroup(code,displayName);S.mem=mm[code];L('group',code);
+ const savedGroup=knownGroups().find(g=>g.code===code);
+ const displayName=group.name||savedGroup?.name||`Group ${code}`;
+ const ownerId=group.ownerId||savedGroup?.ownerId||null;
+ S.code=code;S.groupName=displayName;S.ownerId=ownerId;rememberGroup(code,displayName,ownerId);S.mem=mm[code];L('group',code);
  try{history.replaceState(null,'','?g='+code)}catch(e){}
  S.tab=openCalculator?0:1;S.anim=true;await refresh(true);S.screen='app';render();return true}
 async function create(name,friends=[]){
@@ -183,7 +189,7 @@ async function create(name,friends=[]){
   const d=await api('/groups','POST',{name});
   const groupName=d.name||name;
   const ownerId=d.ownerId;
-  rememberGroup(d.code,groupName);
+  rememberGroup(d.code,groupName,ownerId);
   S.groupName=groupName;
   S.ownerId=ownerId;
   const mm=L('mem')||{};
@@ -233,8 +239,8 @@ async function refresh(force){
  if(!S.code)return;
  try{const d=await api('/g/'+S.code);
   if(!d.members.some(m=>m.id===S.mem)){const mm=L('mem')||{};mm[S.code]=(await api('/g/'+S.code+'/members','POST',L('profile')||defaultProfile())).id;L('mem',mm);S.mem=mm[S.code];return refresh(true)}
-  if(d.name&&d.name!==S.groupName){S.groupName=d.name;rememberGroup(S.code,S.groupName)}
-  if(d.ownerId)S.ownerId=d.ownerId;
+  if(d.name&&d.name!==S.groupName){S.groupName=d.name;rememberGroup(S.code,S.groupName,d.ownerId)}
+  if(d.ownerId){S.ownerId=d.ownerId;rememberGroup(S.code,S.groupName,d.ownerId)}
   const sig=JSON.stringify(d);S.people=d.members;S.items=d.items;
   if(force||sig!==S.sig){S.sig=sig;const a=document.activeElement;
    if(S.screen==='app'){if(!force&&a&&a.tagName==='INPUT')return;render()}}
@@ -439,7 +445,11 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setTab(+b.dat
 (async()=>{
  const q=new URLSearchParams(location.search).get('g'),c=(q||L('group')||'').toUpperCase();
  if(!L('profile'))L('profile',defaultProfile());
- if(c)await join(c,true);else{S.screen='calculator';S.tab=0;render()}})();
+ if(c){
+  const savedGroup=knownGroups().find(g=>g.code===c);
+  if(savedGroup&&savedGroup.ownerId)S.ownerId=savedGroup.ownerId;
+  await join(c,true);
+ }else{S.screen='calculator';S.tab=0;render()}})();
 </script>
 </body>
 </html>
