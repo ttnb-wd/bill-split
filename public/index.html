@@ -22,10 +22,10 @@ h1 span{display:inline-block;animation:drop .9s cubic-bezier(.3,1.6,.5,1) backwa
 h1 .sp{width:16px}
 @keyframes drop{from{transform:translateY(-140px) rotate(-30deg);opacity:0}}
 .tag{color:var(--mut);margin:12px 0 22px;font-size:17px;font-weight:600}
-.tabs{position:relative;display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-radius:22px;padding:5px;margin-bottom:22px;box-shadow:0 10px 30px -14px rgba(123,77,255,.5)}
-.tabs button{position:relative;z-index:1;border:0;background:none;color:var(--mut);font-weight:700;font-size:16px;font-family:inherit;padding:13px 4px;cursor:pointer;transition:color .25s}
+.tabs{position:relative;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-radius:22px;padding:5px;margin-bottom:22px;box-shadow:0 10px 30px -14px rgba(123,77,255,.5)}
+.tabs button{position:relative;z-index:1;border:0;background:none;color:var(--mut);font-weight:700;font-size:14px;font-family:inherit;padding:13px 2px;cursor:pointer;transition:color .25s}
 .tabs button.on{color:#fff}
-.ind{position:absolute;top:5px;bottom:5px;left:5px;width:calc((100% - 10px)/3);border-radius:18px;background:linear-gradient(135deg,var(--pink),var(--vio));box-shadow:0 8px 20px -6px var(--pink);transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
+.ind{position:absolute;top:5px;bottom:5px;left:5px;width:calc((100% - 10px)/4);border-radius:18px;background:linear-gradient(135deg,var(--pink),var(--vio));box-shadow:0 8px 20px -6px var(--pink);transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
 .card{background:var(--card);border-radius:28px;padding:18px;margin-bottom:16px;box-shadow:0 14px 34px -16px rgba(123,77,255,.45)}
 .row{display:flex;gap:10px;align-items:center}
 input{width:100%;border:2.5px solid transparent;background:var(--soft);color:var(--ink);font-weight:700;font-size:17px;font-family:inherit;padding:14px 16px;border-radius:16px;outline:0;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none;position:relative;z-index:2;transition:border-color .2s,background .2s}
@@ -42,6 +42,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--org);outline-of
 .chip.on{background:var(--c);color:#fff;transform:scale(1.08)}
 .chip:active{transform:scale(.9)}
 .av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:19px;background:var(--c);flex:none}
+.av img,.bigav img{width:100%;height:100%;display:block;object-fit:cover;border-radius:inherit}
 .chip.on .av{background:rgba(255,255,255,.35)}
 .person{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;background:var(--card);border-radius:24px;margin-bottom:10px;border-left:8px solid var(--c);box-shadow:0 10px 26px -16px rgba(123,77,255,.5)}
 .person .av{width:48px;height:48px;font-size:27px}
@@ -84,9 +85,9 @@ main{padding:22px 16px calc(120px + env(safe-area-inset-bottom,0px))}
 h1{font-size:clamp(44px,13vw,64px);letter-spacing:-2px}
 .tag{font-size:16px;margin:8px 0 14px}
 .tabs{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:5;max-width:536px;margin:0 auto;box-shadow:0 14px 40px -10px rgba(123,77,255,.6)}
-.tabs button{padding:16px 4px}
-body.noapp .tabs{display:none}
-body.noapp main{padding-bottom:40px}
+.tabs button{font-size:13px;padding:14px 1px}
+body.profile-screen .tabs{display:none}
+body.profile-screen main{padding-bottom:40px}
 #toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .hb{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
 .pill{background:#fff;border-radius:99px;padding:8px 14px;font-weight:700;font-size:14px;color:var(--mut);box-shadow:0 8px 20px -12px rgba(123,77,255,.6)}
@@ -94,6 +95,13 @@ body.noapp main{padding-bottom:40px}
 .mebtn{display:flex;align-items:center;gap:6px;border:2.5px solid var(--c,var(--vio));background:#fff;color:var(--ink);font-weight:700;font-size:15px;font-family:inherit;padding:6px 14px;border-radius:99px;cursor:pointer;min-height:44px}
 .code{font-weight:800;font-size:clamp(36px,12vw,52px);letter-spacing:6px;text-align:center;margin:6px 0 14px;background:linear-gradient(90deg,var(--pink),var(--vio),var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent}
 .bigav{width:96px;height:96px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-size:54px;margin:0 auto 16px;transition:background .3s,transform .4s cubic-bezier(.3,1.8,.5,1);box-shadow:0 14px 30px -12px var(--c)}
+.photo-actions{display:flex;justify-content:center;gap:10px;margin:-4px 0 12px}
+.photo-btn{border:0;background:var(--soft);color:var(--ink);font-family:inherit;font-weight:700;font-size:14px;padding:9px 14px;border-radius:99px;cursor:pointer}
+.photo-btn[hidden]{display:none}
+.result{background:var(--soft);border-radius:22px;padding:16px;text-align:center;margin-top:16px}
+.result small{display:block;color:var(--mut);font-weight:700}
+.result strong{display:block;font-size:clamp(34px,10vw,48px);line-height:1.15;color:var(--vio);margin:4px 0}
+.result .total{color:var(--ink);font-size:17px}
 .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 .pick,.sw{aspect-ratio:1;border:3px solid transparent;border-radius:18px;background:var(--soft);font-size:28px;cursor:pointer;transition:transform .25s cubic-bezier(.3,1.8,.5,1)}
 .sw{background:var(--c)}
@@ -114,7 +122,7 @@ body.noapp main{padding-bottom:40px}
   <p class="tag">Split the bill. Keep the friends. 🍜</p>
   <div id="hdr"></div>
   <nav class="tabs" id="tabs"><div class="ind" id="ind"></div>
-    <button data-t="0">Friends</button><button data-t="1">Expenses</button><button data-t="2">Settle up</button>
+    <button data-t="0">Calculator</button><button data-t="1">Friends</button><button data-t="2">Expenses</button><button data-t="3">Settle</button>
   </nav>
   <section id="view"></section>
 </main>
@@ -123,12 +131,14 @@ body.noapp main{padding-bottom:40px}
 
 const COL=['#FF3D81','#7B4DFF','#00B8FF','#14D99B','#FFC21A','#FF7A29'];
 const EMO=['🐯','🦊','🐼','🐸','🦄','🐙','🐵','🐰','🐻','🐶'];
-const S={screen:'boot',tab:0,anim:true,mem:null,code:null,people:[],items:[],sig:'',draft:null,pending:'',form:{title:'',amt:'',payer:null,split:[]}};
+const S={screen:'calculator',returnScreen:'calculator',tab:0,anim:true,mem:null,code:null,people:[],items:[],sig:'',draft:null,pending:'',calc:{amount:'',people:2},form:{title:'',amt:'',payer:null,split:[]}};
 const $=s=>document.querySelector(s), esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>Number(n.toFixed(2)).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const L=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
-const P=id=>S.people.find(p=>p.id===id)||{name:'?',color:'#999',emoji:'❔'};
-const av=p=>`<span class="av" style="--c:${p.color}">${p.emoji}</span>`;
+const defaultProfile=()=>({name:'You',emoji:EMO[0],color:COL[0],avatar:null});
+const P=id=>S.people.find(p=>p.id===id)||{name:'?',color:'#999',emoji:'❔',avatar:null};
+const safeAvatar=a=>typeof a==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/.test(a)?a:'';
+const av=p=>`<span class="av" style="--c:${p.color}">${safeAvatar(p.avatar)?`<img src="${esc(safeAvatar(p.avatar))}" alt="">`:esc(p.emoji||'🙂')}</span>`;
 const A=()=>S.anim?' in':'';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 $('#title').innerHTML=[...'Bill Split'].map((c,i)=>c===' '?'<span class="sp"></span>':`<span style="color:${COL[i%6]};animation-delay:${i*70}ms">${c}</span>`).join('');
@@ -141,20 +151,20 @@ async function api(p,m='GET',b){
 async function act(fn){try{await fn();await refresh(true)}catch(e){toast(e.message)}}
 
 /* ---- groups & profile ---- */
-async function join(code){
+async function join(code,openCalculator=false){
  code=code.trim().toUpperCase();
  try{await api('/g/'+code)}catch(e){toast(e.status===404?'Invite code not found':e.message);S.screen='start';render();return}
- const pr=L('profile'),mm=L('mem')||{};
+ const pr=L('profile')||defaultProfile(),mm=L('mem')||{};
  if(!mm[code]){try{mm[code]=(await api('/g/'+code+'/members','POST',pr)).id;L('mem',mm)}catch(e){toast(e.message);S.screen='start';render();return}}
  S.code=code;S.mem=mm[code];L('group',code);
  try{history.replaceState(null,'','?g='+code)}catch(e){}
- S.tab=0;S.anim=true;await refresh(true);S.screen='app';render()}
+ S.tab=openCalculator?0:1;S.anim=true;await refresh(true);S.screen='app';render()}
 async function create(){try{const d=await api('/groups','POST');await join(d.code)}catch(e){toast(e.message)}}
-function leave(){L('group',null);S.code=null;S.screen='start';try{history.replaceState(null,'',location.pathname)}catch(e){}render()}
+function leave(){L('group',null);S.code=null;S.tab=0;S.screen='calculator';try{history.replaceState(null,'',location.pathname)}catch(e){}render()}
 async function refresh(force){
  if(!S.code)return;
  try{const d=await api('/g/'+S.code);
-  if(!d.members.some(m=>m.id===S.mem)){const mm=L('mem')||{};mm[S.code]=(await api('/g/'+S.code+'/members','POST',L('profile'))).id;L('mem',mm);S.mem=mm[S.code];return refresh(true)}
+  if(!d.members.some(m=>m.id===S.mem)){const mm=L('mem')||{};mm[S.code]=(await api('/g/'+S.code+'/members','POST',L('profile')||defaultProfile())).id;L('mem',mm);S.mem=mm[S.code];return refresh(true)}
   const sig=JSON.stringify(d);S.people=d.members;S.items=d.items;
   if(force||sig!==S.sig){S.sig=sig;const a=document.activeElement;
    if(S.screen==='app'){if(!force&&a&&a.tagName==='INPUT')return;render()}}
@@ -162,24 +172,26 @@ async function refresh(force){
 setInterval(()=>{if(S.screen==='app'&&!document.hidden)refresh()},4000);
 
 /* ---- screens ---- */
-function hdr(){const p=L('profile')||{};
- $('#hdr').innerHTML=`<div class="hb">${S.screen==='app'?`<span class="pill">Group <b>${S.code}</b></span>`:'<span></span>'}<button class="mebtn" id="me" style="--c:${p.color}" aria-label="Edit profile"><span>${p.emoji}</span>${esc(p.name||'')}</button></div>`;
- $('#me').onclick=()=>{S.draft=null;S.screen='profile';S.anim=true;render()}}
+function hdr(){const p=L('profile')||defaultProfile();
+ $('#hdr').innerHTML=`<div class="hb">${S.screen==='app'?`<span class="pill">Group <b>${S.code}</b></span>`:'<span></span>'}<button class="mebtn" id="me" style="--c:${p.color}" aria-label="Edit profile">${av(p)}${esc(p.name||'')}</button></div>`;
+ $('#me').onclick=()=>{S.returnScreen=S.screen;S.draft=null;S.screen='profile';S.anim=true;render()}}
 function render(){
- document.body.classList.toggle('noapp',S.screen!=='app');
+ document.body.classList.toggle('profile-screen',S.screen==='profile');
  const v=$('#view');
- if(S.screen==='profile'){$('#hdr').innerHTML='';vProfile(v)}
- else if(S.screen==='start'){hdr();vStart(v)}
- else if(S.screen==='app'){hdr();
+ if(S.screen==='profile'){$('#hdr').innerHTML='<button class="linkbtn" id="back">← Back</button>';$('#back').onclick=()=>{S.draft=null;S.screen=S.returnScreen;render()};vProfile(v)}
+ else {hdr();
   $('#ind').style.transform=`translateX(${S.tab*100}%)`;
   document.querySelectorAll('.tabs button').forEach((b,i)=>b.classList.toggle('on',i===S.tab));
-  [vPeople,vSpend,vSettle][S.tab](v)}
+  if(S.code&&S.screen==='app') [vCalculator,vPeople,vSpend,vSettle][S.tab](v);
+  else if(S.tab===0) vCalculator(v);
+  else vStart(v)}
  S.anim=false}
-function setTab(t){S.tab=t;S.anim=true;render()}
+function setTab(t){S.tab=t;S.screen=S.code?'app':t===0?'calculator':'start';S.anim=true;render()}
 
 function vProfile(v){
- const p=S.draft||(S.draft=Object.assign({name:'',emoji:EMO[0],color:COL[0]},L('profile')||{}));
- v.innerHTML=`<div class="card${A()}"><div class="bigav" style="--c:${p.color}">${p.emoji}</div>
+ const p=S.draft||(S.draft=Object.assign(defaultProfile(),L('profile')||{}));
+ v.innerHTML=`<div class="card${A()}"><div class="bigav" style="--c:${p.color}">${safeAvatar(p.avatar)?`<img src="${esc(safeAvatar(p.avatar))}" alt="Profile photo">`:esc(p.emoji)}</div>
+ <div class="photo-actions"><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden><button class="photo-btn" id="upload" type="button">Upload photo</button><button class="photo-btn" id="clearphoto" type="button" ${p.avatar?'':'hidden'}>Remove photo</button></div>
  <input id="nm" placeholder="Your name" maxlength="16" autocomplete="off" value="${esc(p.name)}">
  <div class="lbl">Pick your face</div><div class="grid">${EMO.map(e=>`<button class="pick${e===p.emoji?' on':''}" data-e="${e}" aria-label="Avatar ${e}">${e}</button>`).join('')}</div>
  <div class="lbl">Pick your color</div><div class="grid">${COL.map(c=>`<button class="sw${c===p.color?' on':''}" style="--c:${c}" data-c="${c}" aria-label="Color ${c}"></button>`).join('')}</div>
@@ -187,12 +199,44 @@ function vProfile(v){
  const keep=()=>{p.name=$('#nm').value};
  v.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{keep();p.emoji=b.dataset.e;render()});
  v.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{keep();p.color=b.dataset.c;render()});
+ $('#upload').onclick=()=>$('#photo').click();
+ $('#photo').onchange=async e=>{const file=e.target.files[0];if(!file)return;
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){toast('Choose a JPG, PNG or WebP image under 10 MB');e.target.value='';return}
+  try{keep();p.avatar=await resizeAvatar(file);render()}catch(err){toast(err.message)}};
+ $('#clearphoto').onclick=()=>{keep();p.avatar=null;render()};
  const save=async()=>{keep();p.name=p.name.trim();if(!p.name){shake($('#nm'));toast('Add your name');return}
-  L('profile',{name:p.name,emoji:p.emoji,color:p.color});S.draft=null;
+  L('profile',{name:p.name,emoji:p.emoji,color:p.color,avatar:p.avatar||null});S.draft=null;
   if(S.code&&S.mem){try{await api('/g/'+S.code+'/members/'+S.mem,'PATCH',L('profile'));await refresh(true)}catch(e){toast(e.message)}S.screen='app';S.anim=true;render();return}
   const c=S.pending||L('group')||'';S.pending='';
-  if(c)join(c);else{S.screen='start';S.anim=true;render()}};
+  if(c)join(c);else{S.screen=S.returnScreen||'calculator';S.anim=true;render()}};
  $('#ps').onclick=save;$('#nm').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();save()}}}
+
+async function resizeAvatar(file){
+ const url=URL.createObjectURL(file);
+ try{const img=new Image();img.src=url;await img.decode();
+  const side=Math.min(img.naturalWidth,img.naturalHeight),x=(img.naturalWidth-side)/2,y=(img.naturalHeight-side)/2;
+  const canvas=document.createElement('canvas');canvas.width=256;canvas.height=256;
+  canvas.getContext('2d').drawImage(img,x,y,side,side,0,0,256,256);
+  let data=canvas.toDataURL('image/jpeg',.78);
+  if(data.length>68000)data=canvas.toDataURL('image/jpeg',.55);
+  if(data.length>70000)throw new Error('Image is too detailed to upload; choose another photo');
+  return data
+ }finally{URL.revokeObjectURL(url)}}
+
+function vCalculator(v){
+ v.innerHTML=`<div class="card${A()}">
+  <div class="lbl" style="margin-top:0">Bill total</div><input id="ctotal" type="number" inputmode="decimal" min="0" step="any" placeholder="Enter bill amount" value="${esc(S.calc.amount)}">
+  <div class="lbl">Number of people</div><input id="cpeople" type="number" inputmode="numeric" min="1" max="100" step="1" value="${esc(S.calc.people)}">
+  <div class="result" aria-live="polite"><small>Each person pays</small><strong id="cshare">0.00</strong><small class="total" id="ctotal-label">Enter an amount to split</small></div>
+  <button class="linkbtn" id="creset">Clear calculator</button>
+ </div>`;
+ const update=()=>{S.calc.amount=$('#ctotal').value;S.calc.people=$('#cpeople').value;
+  const total=Number(S.calc.amount),people=Number(S.calc.people),valid=Number.isFinite(total)&&total>0&&Number.isInteger(people)&&people>=1&&people<=100;
+  $('#cshare').textContent=valid?fmt(total/people):'0.00';
+  $('#ctotal-label').textContent=valid?`${fmt(total)} total · ${people} ${people===1?'person':'people'}`:'Enter an amount and number of people'};
+ $('#ctotal').oninput=update;$('#cpeople').oninput=update;
+ $('#creset').onclick=()=>{S.calc={amount:'',people:2};render()};
+ update()}
 
 function vStart(v){
  v.innerHTML=`<div class="card${A()}"><div class="empty" style="padding:6px"><big>🍜</big>Start a group, then invite your friends</div><button class="btn full" id="cr">Create a group</button>
@@ -280,8 +324,8 @@ function vSettle(v){
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setTab(+b.dataset.t));
 (async()=>{
  const q=new URLSearchParams(location.search).get('g'),c=(q||L('group')||'').toUpperCase();
- if(!L('profile')){S.pending=c;S.screen='profile';render();return}
- if(c)await join(c);else{S.screen='start';render()}})();
+ if(!L('profile'))L('profile',defaultProfile());
+ if(c)await join(c,true);else{S.screen='calculator';S.tab=0;render()}})();
 </script>
 </body>
 </html>

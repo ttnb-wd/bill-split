@@ -22,15 +22,16 @@ function neon() {
   const ready = (async () => {
     await sql('create table if not exists groups(code text primary key, created_at timestamptz default now())');
     await sql('create table if not exists members(id text primary key, code text not null, name text, emoji text, color text, created_at timestamptz default now())');
+    await sql('alter table members add column if not exists avatar text');
     await sql('create table if not exists expenses(id text primary key, code text not null, kind text not null, title text, cents integer not null, payer text, split text, from_id text, to_id text, created_at timestamptz default now())');
   })();
   const w = f => async (...a) => { await ready; return f(...a); };
   return {
     hasGroup: w(async c => (await sql('select 1 from groups where code=$1', [c])).length > 0),
     createGroup: w(c => sql('insert into groups(code) values($1)', [c])),
-    members: w(c => sql('select id,name,emoji,color from members where code=$1 order by created_at', [c])),
-    addMember: w(m => sql('insert into members(id,code,name,emoji,color) values($1,$2,$3,$4,$5)', [m.id, m.code, m.name, m.emoji, m.color])),
-    updMember: w((id, c, f) => sql('update members set name=$3,emoji=$4,color=$5 where id=$1 and code=$2', [id, c, f.name, f.emoji, f.color])),
+    members: w(c => sql('select id,name,emoji,color,avatar from members where code=$1 order by created_at', [c])),
+    addMember: w(m => sql('insert into members(id,code,name,emoji,color,avatar) values($1,$2,$3,$4,$5,$6)', [m.id, m.code, m.name, m.emoji, m.color, m.avatar])),
+    updMember: w((id, c, f) => sql('update members set name=$3,emoji=$4,color=$5,avatar=$6 where id=$1 and code=$2', [id, c, f.name, f.emoji, f.color, f.avatar])),
     delMember: w((id, c) => sql('delete from members where id=$1 and code=$2', [id, c])),
     expenses: w(c => sql('select * from expenses where code=$1 order by created_at', [c])),
     addExpense: w(e => sql('insert into expenses(id,code,kind,title,cents,payer,split,from_id,to_id) values($1,$2,$3,$4,$5,$6,$7,$8,$9)', [e.id, e.code, e.kind, e.title, e.cents, e.payer, e.split, e.from_id, e.to_id])),
@@ -42,7 +43,7 @@ function memory() { // used when DATABASE_URL is empty (local testing only)
   const G = new Set(), M = [], E = [];
   return {
     hasGroup: async c => G.has(c), createGroup: async c => { G.add(c); },
-    members: async c => M.filter(m => m.code === c).map(({ id, name, emoji, color }) => ({ id, name, emoji, color })),
+    members: async c => M.filter(m => m.code === c).map(({ id, name, emoji, color, avatar }) => ({ id, name, emoji, color, avatar })),
     addMember: async m => { M.push(m); },
     updMember: async (id, c, f) => { const m = M.find(x => x.id === id && x.code === c); if (m) Object.assign(m, f); },
     delMember: async (id, c) => { const i = M.findIndex(x => x.id === id && x.code === c); if (i >= 0) M.splice(i, 1); },
@@ -63,6 +64,8 @@ const readBody = req => new Promise(ok => { let d = ''; req.on('data', c => { d 
   req.on('end', () => { try { ok(JSON.parse(d || '{}')); } catch { ok({}); } }); });
 const clean = (s, n) => String(s || '').trim().slice(0, n);
 const color = c => /^#[0-9a-f]{6}$/i.test(c) ? c : '#7B4DFF';
+const avatar = value => value == null || value === '' ? null
+  : typeof value === 'string' && value.length <= 70000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/.test(value) ? value : false;
 
 http.createServer(async (req, res) => {
   try {
@@ -84,7 +87,9 @@ http.createServer(async (req, res) => {
       if (m === 'POST' || (m === 'PATCH' && id)) {
         const b = await readBody(req), name = clean(b.name, 16);
         if (!name) return send(res, 400, { error: 'Name is required' });
-        const f = { name, emoji: clean(b.emoji, 8) || '🙂', color: color(b.color) };
+        const photo = avatar(b.avatar);
+        if (photo === false) return send(res, 400, { error: 'Profile image is invalid or too large' });
+        const f = { name, emoji: clean(b.emoji, 8) || '🙂', color: color(b.color), avatar: photo };
         if (m === 'PATCH') { await S.updMember(id, code, f); return send(res, 200, { id, ...f }); }
         if (members.length >= 30) return send(res, 400, { error: 'Group is full' });
         const mem = { id: rid('m'), code, ...f }; await S.addMember(mem);
