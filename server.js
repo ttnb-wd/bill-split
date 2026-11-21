@@ -21,6 +21,8 @@ function neon() {
   };
   const ready = (async () => {
     await sql('create table if not exists groups(code text primary key, created_at timestamptz default now())');
+    await sql('alter table groups add column if not exists name text');
+    await sql("update groups set name='Group '||code where name is null or btrim(name)=''");
     await sql('create table if not exists members(id text primary key, code text not null, name text, emoji text, color text, created_at timestamptz default now())');
     await sql('alter table members add column if not exists avatar text');
     await sql('create table if not exists expenses(id text primary key, code text not null, kind text not null, title text, cents integer not null, payer text, split text, from_id text, to_id text, created_at timestamptz default now())');
@@ -28,7 +30,8 @@ function neon() {
   const w = f => async (...a) => { await ready; return f(...a); };
   return {
     hasGroup: w(async c => (await sql('select 1 from groups where code=$1', [c])).length > 0),
-    createGroup: w(c => sql('insert into groups(code) values($1)', [c])),
+    groupName: w(async c => (await sql('select name from groups where code=$1', [c]))[0]?.name || `Group ${c}`),
+    createGroup: w((c, name) => sql('insert into groups(code,name) values($1,$2)', [c, name])),
     members: w(c => sql('select id,name,emoji,color,avatar from members where code=$1 order by created_at', [c])),
     addMember: w(m => sql('insert into members(id,code,name,emoji,color,avatar) values($1,$2,$3,$4,$5,$6)', [m.id, m.code, m.name, m.emoji, m.color, m.avatar])),
     updMember: w((id, c, f) => sql('update members set name=$3,emoji=$4,color=$5,avatar=$6 where id=$1 and code=$2', [id, c, f.name, f.emoji, f.color, f.avatar])),
@@ -40,9 +43,9 @@ function neon() {
   };
 }
 function memory() { // used when DATABASE_URL is empty (local testing only)
-  const G = new Set(), M = [], E = [];
+  const G = new Map(), M = [], E = [];
   return {
-    hasGroup: async c => G.has(c), createGroup: async c => { G.add(c); },
+    hasGroup: async c => G.has(c), groupName: async c => G.get(c) || `Group ${c}`, createGroup: async (c, name) => { G.set(c, name); },
     members: async c => M.filter(m => m.code === c).map(({ id, name, emoji, color, avatar }) => ({ id, name, emoji, color, avatar })),
     addMember: async m => { M.push(m); },
     updMember: async (id, c, f) => { const m = M.find(x => x.id === id && x.code === c); if (m) Object.assign(m, f); },
@@ -75,13 +78,15 @@ http.createServer(async (req, res) => {
       return res.end(fs.readFileSync(path.join(__dirname, 'public', 'index.html')));
     }
     if (m === 'POST' && p[1] === 'groups') {
+      const b = await readBody(req), name = clean(b.name, 40);
+      if (!name) return send(res, 400, { error: 'Group name is required' });
       let c; do { c = newCode(); } while (await S.hasGroup(c));
-      await S.createGroup(c); return send(res, 200, { code: c });
+      await S.createGroup(c, name); return send(res, 200, { code: c, name });
     }
     if (p[1] !== 'g' || !p[2]) return send(res, 404, { error: 'Not found' });
     const code = p[2].toUpperCase(), sub = p[3], id = p[4];
     if (!(await S.hasGroup(code))) return send(res, 404, { error: 'Group not found' });
-    if (m === 'GET' && !sub) return send(res, 200, { members: await S.members(code), items: (await S.expenses(code)).map(toItem) });
+    if (m === 'GET' && !sub) return send(res, 200, { name: await S.groupName(code), members: await S.members(code), items: (await S.expenses(code)).map(toItem) });
     const members = await S.members(code), has = x => members.some(y => y.id === x);
     if (sub === 'members') {
       if (m === 'POST' || (m === 'PATCH' && id)) {

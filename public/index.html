@@ -90,8 +90,9 @@ body.profile-screen .tabs{display:none}
 body.profile-screen main{padding-bottom:40px}
 #toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .hb{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
-.pill{background:#fff;border-radius:99px;padding:8px 14px;font-weight:700;font-size:14px;color:var(--mut);box-shadow:0 8px 20px -12px rgba(123,77,255,.6)}
+.pill{display:flex;align-items:center;gap:8px;min-width:0;max-width:65%;background:#fff;border-radius:99px;padding:8px 14px;font-weight:700;font-size:14px;color:var(--mut);box-shadow:0 8px 20px -12px rgba(123,77,255,.6)}
 .pill b{color:var(--ink);letter-spacing:2px}
+.pill .gn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .mebtn{display:flex;align-items:center;gap:6px;border:2.5px solid var(--c,var(--vio));background:#fff;color:var(--ink);font-weight:700;font-size:15px;font-family:inherit;padding:6px 14px;border-radius:99px;cursor:pointer;min-height:44px}
 .code{font-weight:800;font-size:clamp(36px,12vw,52px);letter-spacing:6px;text-align:center;margin:6px 0 14px;background:linear-gradient(90deg,var(--pink),var(--vio),var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent}
 .bigav{width:96px;height:96px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-size:54px;margin:0 auto 16px;transition:background .3s,transform .4s cubic-bezier(.3,1.8,.5,1);box-shadow:0 14px 30px -12px var(--c)}
@@ -109,6 +110,19 @@ body.profile-screen main{padding-bottom:40px}
 .pick.on,.sw.on{border-color:var(--ink);transform:scale(1.12)}
 .pick:active,.sw:active{transform:scale(.88)}
 .linkbtn{display:block;margin:10px auto 0;border:0;background:none;color:var(--mut);font-weight:700;font-size:15px;font-family:inherit;padding:12px;cursor:pointer;text-decoration:underline}
+.group-list{display:grid;gap:9px;margin-bottom:16px}
+.group-link{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:14px 16px;border:0;border-left:8px solid var(--vio);border-radius:20px;background:var(--card);color:var(--ink);font-family:inherit;font-weight:700;font-size:16px;box-shadow:0 10px 26px -16px rgba(123,77,255,.5);cursor:pointer;text-align:left;transition:transform .2s}
+.group-link:hover{transform:translateY(-2px)}
+.group-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.group-link small{flex:none;color:var(--mut);letter-spacing:1.5px}
+.modal-backdrop{position:fixed;inset:0;z-index:7;display:grid;place-items:center;padding:18px;background:rgba(42,27,107,.38);backdrop-filter:blur(8px)}
+.modal-card{width:min(100%,520px);max-height:calc(100vh - 36px);overflow:auto;background:var(--card);border-radius:28px;padding:20px;box-shadow:0 20px 60px -18px rgba(42,27,107,.55);animation:pop .45s cubic-bezier(.3,1.6,.5,1) backwards}
+.modal-card h2{margin:0 0 12px}
+.friend-options{display:grid;gap:8px;max-height:30vh;overflow:auto;margin-top:12px}
+.friend-option{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:2px solid var(--soft);border-radius:18px;background:var(--card);color:var(--ink);font-family:inherit;font-weight:700;font-size:15px;text-align:left;cursor:pointer}
+.friend-option.on{border-color:var(--vio);background:var(--soft)}
+.friend-option span:nth-child(2){flex:1}
+.friend-option small{color:var(--mut)}
 .sep{text-align:center;color:var(--mut);font-weight:700;margin:14px 0}
 .chip,.x{min-height:40px}
 .x{min-width:40px}
@@ -131,11 +145,13 @@ body.profile-screen main{padding-bottom:40px}
 
 const COL=['#FF3D81','#7B4DFF','#00B8FF','#14D99B','#FFC21A','#FF7A29'];
 const EMO=['🐯','🦊','🐼','🐸','🦄','🐙','🐵','🐰','🐻','🐶'];
-const S={screen:'calculator',returnScreen:'calculator',tab:0,anim:true,mem:null,code:null,people:[],items:[],sig:'',draft:null,pending:'',calc:{amount:'',people:2},form:{title:'',amt:'',payer:null,split:[]}};
+const S={screen:'calculator',returnScreen:'calculator',tab:0,anim:true,mem:null,code:null,groupName:'',people:[],items:[],sig:'',draft:null,pending:'',createForm:null,calc:{amount:'',people:2},form:{title:'',amt:'',payer:null,split:[]}};
 const $=s=>document.querySelector(s), esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>Number(n.toFixed(2)).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const L=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
 const defaultProfile=()=>({name:'You',emoji:EMO[0],color:COL[0],avatar:null});
+const knownGroups=()=>{const groups=L('groups');return Array.isArray(groups)?groups.filter(g=>g&&typeof g.code==='string').map(g=>({code:g.code,name:typeof g.name==='string'&&g.name.trim()?g.name.trim():`Group ${g.code}`})):[]};
+function rememberGroup(code,name){const groups=knownGroups().filter(g=>g.code!==code);groups.unshift({code,name:String(name||`Group ${code}`).slice(0,40)});L('groups',groups)}
 const P=id=>S.people.find(p=>p.id===id)||{name:'?',color:'#999',emoji:'❔',avatar:null};
 const safeAvatar=a=>typeof a==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/.test(a)?a:'';
 const av=p=>`<span class="av" style="--c:${p.color}">${safeAvatar(p.avatar)?`<img src="${esc(safeAvatar(p.avatar))}" alt="">`:esc(p.emoji||'🙂')}</span>`;
@@ -153,18 +169,60 @@ async function act(fn){try{await fn();await refresh(true)}catch(e){toast(e.messa
 /* ---- groups & profile ---- */
 async function join(code,openCalculator=false){
  code=code.trim().toUpperCase();
- try{await api('/g/'+code)}catch(e){toast(e.status===404?'Invite code not found':e.message);S.screen='start';render();return}
+ let group;
+ try{group=await api('/g/'+code)}catch(e){toast(e.status===404?'Invite code not found':e.message);S.screen='start';render();return false}
  const pr=L('profile')||defaultProfile(),mm=L('mem')||{};
- if(!mm[code]){try{mm[code]=(await api('/g/'+code+'/members','POST',pr)).id;L('mem',mm)}catch(e){toast(e.message);S.screen='start';render();return}}
- S.code=code;S.mem=mm[code];L('group',code);
+ if(!mm[code]){try{mm[code]=(await api('/g/'+code+'/members','POST',pr)).id;L('mem',mm)}catch(e){toast(e.message);S.screen='start';render();return false}}
+ const savedName=knownGroups().find(g=>g.code===code)?.name;
+ const displayName=group.name||savedName||`Group ${code}`;
+ S.code=code;S.groupName=displayName;rememberGroup(code,displayName);S.mem=mm[code];L('group',code);
  try{history.replaceState(null,'','?g='+code)}catch(e){}
- S.tab=openCalculator?0:1;S.anim=true;await refresh(true);S.screen='app';render()}
-async function create(){try{const d=await api('/groups','POST');await join(d.code)}catch(e){toast(e.message)}}
-function leave(){L('group',null);S.code=null;S.tab=0;S.screen='calculator';try{history.replaceState(null,'',location.pathname)}catch(e){}render()}
+ S.tab=openCalculator?0:1;S.anim=true;await refresh(true);S.screen='app';render();return true}
+async function create(name,friends=[]){
+ try{
+  const d=await api('/groups','POST',{name});
+  const groupName=d.name||name;
+  rememberGroup(d.code,groupName);
+  S.groupName=groupName;
+  if(!await join(d.code))return;
+  for(const friend of friends){
+   try{await api('/g/'+d.code+'/members','POST',friend)}
+   catch(e){toast(`${friend.name} could not be added: ${e.message}`);break}
+  }
+  S.createForm=null;await refresh(true)
+ }catch(e){toast(e.message)}}
+function openCreateForm(){S.createForm={name:'',friends:[],selected:[],loaded:false,loading:false,picker:false};S.screen='create';S.anim=true;render()}
+function friendKey(p){return JSON.stringify([p.name,p.emoji,p.color,p.avatar||''])}
+async function availableFriends(){
+ const all=[],me=L('profile')||defaultProfile();let unavailable=0;
+ for(const group of knownGroups()){
+  let d;
+  try{d=await api('/g/'+group.code)}
+  catch(e){if(e.status===404){unavailable++;continue}throw e}
+  if(d.name&&d.name!==group.name)rememberGroup(group.code,d.name);
+  for(const m of d.members){
+   const friend={name:m.name,emoji:m.emoji,color:m.color,avatar:m.avatar||null};
+   if(friendKey(friend)===friendKey(me)||all.some(p=>friendKey(p)===friendKey(friend)))continue;
+   all.push(friend)
+  }
+ }
+ if(unavailable)toast('Some saved groups are no longer available');
+ return all}
+async function toggleFriendPicker(){
+ const f=S.createForm;f.picker=!f.picker;
+ if(f.picker&&!f.loaded){
+  f.loading=true;render();
+  try{f.friends=await availableFriends();f.loaded=true}
+  catch(e){f.picker=false;toast(e.message)}
+  f.loading=false
+ }
+ render()}
+function leave(){L('group',null);S.code=null;S.groupName='';S.tab=1;S.screen='start';try{history.replaceState(null,'',location.pathname)}catch(e){}render()}
 async function refresh(force){
  if(!S.code)return;
  try{const d=await api('/g/'+S.code);
   if(!d.members.some(m=>m.id===S.mem)){const mm=L('mem')||{};mm[S.code]=(await api('/g/'+S.code+'/members','POST',L('profile')||defaultProfile())).id;L('mem',mm);S.mem=mm[S.code];return refresh(true)}
+  if(d.name&&d.name!==S.groupName){S.groupName=d.name;rememberGroup(S.code,S.groupName)}
   const sig=JSON.stringify(d);S.people=d.members;S.items=d.items;
   if(force||sig!==S.sig){S.sig=sig;const a=document.activeElement;
    if(S.screen==='app'){if(!force&&a&&a.tagName==='INPUT')return;render()}}
@@ -173,7 +231,7 @@ setInterval(()=>{if(S.screen==='app'&&!document.hidden)refresh()},4000);
 
 /* ---- screens ---- */
 function hdr(){const p=L('profile')||defaultProfile();
- $('#hdr').innerHTML=`<div class="hb">${S.screen==='app'?`<span class="pill">Group <b>${S.code}</b></span>`:'<span></span>'}<button class="mebtn" id="me" style="--c:${p.color}" aria-label="Edit profile">${av(p)}${esc(p.name||'')}</button></div>`;
+ $('#hdr').innerHTML=`<div class="hb">${S.screen==='app'?`<span class="pill"><span class="gn">${esc(S.groupName||'Group')}</span><b>${S.code}</b></span>`:'<span></span>'}<button class="mebtn" id="me" style="--c:${p.color}" aria-label="Edit profile">${av(p)}${esc(p.name||'')}</button></div>`;
  $('#me').onclick=()=>{S.returnScreen=S.screen;S.draft=null;S.screen='profile';S.anim=true;render()}}
 function render(){
  document.body.classList.toggle('profile-screen',S.screen==='profile');
@@ -182,7 +240,8 @@ function render(){
  else {hdr();
   $('#ind').style.transform=`translateX(${S.tab*100}%)`;
   document.querySelectorAll('.tabs button').forEach((b,i)=>b.classList.toggle('on',i===S.tab));
-  if(S.code&&S.screen==='app') [vCalculator,vPeople,vSpend,vSettle][S.tab](v);
+  if(S.screen==='create') vCreate(v);
+  else if(S.code&&S.screen==='app') [vCalculator,vPeople,vSpend,vSettle][S.tab](v);
   else if(S.tab===0) vCalculator(v);
   else vStart(v)}
  S.anim=false}
@@ -239,20 +298,55 @@ function vCalculator(v){
  update()}
 
 function vStart(v){
+ const groups=knownGroups();
  v.innerHTML=`<div class="card${A()}"><div class="empty" style="padding:6px"><big>🍜</big>Start a group, then invite your friends</div><button class="btn full" id="cr">Create a group</button>
- <div class="sep">or join with an invite code</div><div class="row"><input id="jc" placeholder="Invite code" maxlength="6" autocomplete="off" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:3px"><button class="btn mint" id="jn">Join</button></div></div>`;
- $('#cr').onclick=create;
+ <div class="sep">or join with an invite code</div><div class="row"><input id="jc" placeholder="Invite code" maxlength="6" autocomplete="off" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:3px"><button class="btn mint" id="jn">Join</button></div></div>`+
+ `<h2>Your groups</h2>${groups.length?`<div class="group-list">${groups.map(g=>`<button class="group-link" type="button" data-g="${esc(g.code)}"><span>${esc(g.name)}</span><small>${esc(g.code)}</small></button>`).join('')}</div>`:'<div class="empty" style="padding:18px"><big>👥</big>Your groups will appear here</div>'}`;
+ $('#cr').onclick=openCreateForm;
+ v.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>join(b.dataset.g));
  const go=()=>{const c=$('#jc').value.trim();if(c.length<4){shake($('#jc'));return}join(c)};
  $('#jn').onclick=go;$('#jc').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}}}
+
+function vCreate(v){
+ const f=S.createForm;
+ if(!f){S.screen='start';return render()}
+ const selected=f.selected.map(p=>`<span class="chip on" style="--c:${p.color}">${av(p)}${esc(p.name)}</span>`).join('');
+ const picker=f.loading?'<div class="empty" style="padding:18px">Loading friends…</div>'
+  :f.loaded&&!f.friends.length?'<div class="empty" style="padding:18px">No saved friends yet. Join or create a group first.</div>'
+  :f.loaded?`<div class="friend-options">${f.friends.map((p,i)=>{const on=f.selected.some(x=>friendKey(x)===friendKey(p));
+    return `<button type="button" class="friend-option${on?' on':''}" data-friend="${i}" aria-pressed="${on}">${av(p)}<span>${esc(p.name)}</span><small>${on?'Added':'Add'}</small></button>`}).join('')}</div>`:'';
+ v.innerHTML=`<div class="modal-backdrop"><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="create-title">
+  <button class="linkbtn" id="cancel-create">← Back</button><h2 id="create-title">Create a group</h2>
+  <div class="lbl" style="margin-top:0">Group name</div><input id="group-name" placeholder="e.g. Weekend dinner" maxlength="40" autocomplete="off" value="${esc(f.name)}">
+  <div class="lbl">Friends</div><button class="btn mint full" id="add-friends" type="button">${f.picker?'Done':'Add friends'}</button>
+  ${selected?`<div class="chips" style="margin-top:12px">${selected}</div>`:''}
+  ${f.picker?picker:''}
+  <div class="lbl">You can invite others with a group link after creating.</div>
+  <button class="btn full" id="finish-create" type="button">Create group</button>
+ </div></div>`;
+ $('#cancel-create').onclick=()=>{S.createForm=null;S.screen='start';render()};
+ $('#group-name').oninput=e=>{f.name=e.target.value};
+ $('#add-friends').onclick=toggleFriendPicker;
+ v.querySelectorAll('[data-friend]').forEach(b=>b.onclick=()=>{
+  const person=f.friends[Number(b.dataset.friend)],key=friendKey(person);
+  f.selected=f.selected.some(p=>friendKey(p)===key)?f.selected.filter(p=>friendKey(p)!==key):[...f.selected,person];
+  render()});
+ $('#finish-create').onclick=()=>{
+  f.name=$('#group-name').value.trim();
+  if(!f.name){shake($('#group-name'));toast('Enter a group name');return}
+  create(f.name,f.selected)}
+}
 
 function vPeople(v){
  const link=location.origin+location.pathname+'?g='+S.code;
  const copy=()=>{(navigator.clipboard?navigator.clipboard.writeText(link):Promise.reject()).then(()=>toast('Invite link copied'),()=>toast(link))};
- v.innerHTML=`<div class="card${A()}"><div class="lbl" style="margin:0;justify-content:center">Invite friends with this code</div><div class="code">${S.code}</div>
+ const copyCode=()=>{(navigator.clipboard?navigator.clipboard.writeText(S.code):Promise.reject()).then(()=>toast('Invite code copied ✓'),()=>toast(S.code))};
+ v.innerHTML=`<div class="card${A()}"><div class="lbl" style="margin:0;justify-content:center">Invite friends with this code</div><div class="code" id="code-display" style="cursor:pointer" title="Click to copy code">${S.code}</div>
  <div class="row"><button class="btn" id="sh" style="flex:1">Share invite</button><button class="btn mint" id="cp" style="flex:1">Copy link</button></div></div>
  <h2>In this group</h2>`+S.people.map(p=>`<div class="person${A()}" style="--c:${p.color}">${av(p)}<b>${esc(p.name)}${p.id===S.mem?' <small style="color:var(--mut)">(you)</small>':''}</b>${p.id===S.mem?'':`<button class="x" data-d="${p.id}" aria-label="Remove ${esc(p.name)}">×</button>`}</div>`).join('')+
  `<div class="card"><div class="lbl" style="margin-top:0">Friend not on their phone? Add them</div><div class="row"><input id="pn" placeholder="Friend’s name" maxlength="16" autocomplete="off"><button class="btn" id="pa">Add</button></div></div>
  <button class="linkbtn" id="sw">Switch group</button>`;
+ $('#code-display').onclick=copyCode;
  $('#cp').onclick=copy;
  $('#sh').onclick=()=>{if(navigator.share)navigator.share({title:'Bill Split',text:'Join my group on Bill Split',url:link}).catch(()=>{});else copy()};
  $('#sw').onclick=leave;
